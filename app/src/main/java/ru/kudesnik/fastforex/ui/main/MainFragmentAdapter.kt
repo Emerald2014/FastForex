@@ -10,7 +10,7 @@ import ru.kudesnik.fastforex.databinding.ItemMainBinding
 import ru.kudesnik.fastforex.model.entities.FetchAll
 import java.util.*
 
-class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
+class MainFragmentAdapter (val sum: Int): RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
     private var currencyData: List<Pair<String, Double>> = listOf()
     private lateinit var testData : List<String>
 
@@ -50,7 +50,7 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainViewHol
 
         fun bind(currency: Pair<String, Double>) = with(binding) {
             currencyItem.text = currency.first
-            exchangeItem.text = currency.second.toString()
+            exchangeItem.text = ((currency.second)*sum).toString()
 
         }
     }

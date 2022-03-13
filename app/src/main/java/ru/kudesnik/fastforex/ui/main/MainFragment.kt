@@ -1,6 +1,5 @@
 package ru.kudesnik.fastforex.ui.main
 
-import android.R
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -14,8 +13,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.kudesnik.fastforex.databinding.MainFragmentBinding
+import ru.kudesnik.fastforex.R
 import ru.kudesnik.fastforex.model.AppState
+import ru.kudesnik.fastforex.databinding.MainFragmentBinding
 
 
 class MainFragment : Fragment() {
@@ -46,7 +46,7 @@ class MainFragment : Fragment() {
 //            adapter = MainFragmentAdapter().apply { setCurrency(testData) }
 //            recyclerViewMain.adapter = adapter
 
-            adapter = MainFragmentAdapter()
+            adapter = MainFragmentAdapter(editTextSum.text.toString().toInt())
             recyclerViewMain.adapter = adapter
 
             viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
@@ -55,7 +55,10 @@ class MainFragment : Fragment() {
 
 //Spinner
 
+button.setOnClickListener{
+    viewModel.getCurrencyList(selectedItemSpinner)
 
+}
         }
     }
 
@@ -63,15 +66,19 @@ class MainFragment : Fragment() {
         Log.d("testingMy", "OnViewCreated. listAdapter - $listAdapter")
         val adp1: ArrayAdapter<String> = ArrayAdapter<String>(
             requireContext(),
-            R.layout.simple_list_item_1, listAdapter
+            android.R.layout.simple_list_item_1 , listAdapter
+        //simple_list_item_1
         )
-        adp1.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adp1
-        val index = if (listAdapter.contains("USD")) {
-            listAdapter.indexOf("USD")
-        } else {
-            listAdapter.indexOfFirst { true }
-        }
+        val index = if (selectedItemSpinner!="") {
+            listAdapter.indexOf(selectedItemSpinner)
+        } else if (listAdapter.contains("USD")) {
+                listAdapter.indexOf("USD")
+            } else {
+                listAdapter.indexOfFirst { true }
+            }
+
 
         spinner.setSelection(index)
 
@@ -89,7 +96,7 @@ class MainFragment : Fragment() {
                             }, $selectedItemPosition"
                 )
 //                viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
-
+                adapter?.notifyDataSetChanged()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -98,6 +105,8 @@ class MainFragment : Fragment() {
 
     }
 
+
+
     private fun renderData(appState: AppState) = with(binding) {
         when (appState) {
 
@@ -105,7 +114,7 @@ class MainFragment : Fragment() {
                 listAdapter = appState.currenciesName.currencies.keys.toList()
                 Log.d("testingMy", "Success. listAdapter - $listAdapter")
                 getSpinner()
-                adapter = MainFragmentAdapter().apply {
+                adapter = MainFragmentAdapter(editTextSum.text.toString().toInt()).apply {
                     setCurrency(appState.currencyData)
                 }
                 recyclerViewMain.adapter = adapter
