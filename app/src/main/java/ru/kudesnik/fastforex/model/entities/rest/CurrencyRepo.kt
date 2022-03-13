@@ -12,4 +12,12 @@ object CurrencyRepo {
             .build()
         adapter.create(CurrencyAllAPI::class.java)
     }
+    val currenciesName: CurrencyAPI by lazy {
+        val adapter = Retrofit.Builder()
+            .baseUrl(ApiUtils.baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(ApiUtils.getOkHTTPBuilder())
+            .build()
+        adapter.create(CurrencyAPI::class.java)
+    }
 }

@@ -30,12 +30,17 @@ class MainFragmentAdapter : RecyclerView.Adapter<MainFragmentAdapter.MainViewHol
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        Log.d("listOperations", "Действие 2 - Перед  holder.bind. Получаем позицию $position ")
 
 //  holder.bind(testData[position])
         holder.bind(currencyData[position])
     }
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
 //    override fun getItemCount() = testData.size
     override fun getItemCount() = currencyData.size
 

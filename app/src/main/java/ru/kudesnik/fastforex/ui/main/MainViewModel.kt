@@ -12,10 +12,17 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun getLiveData(): LiveData<AppState> = liveData
 
-    fun getCurrencyList() {
+    fun getCurrencyList(base:String) {
         liveData.value = AppState.Loading
         Thread {
-            liveData.postValue(AppState.Success(repository.getAllCurrency("RUB")))
+            liveData.postValue(AppState.Success(repository.getAllCurrency(base), repository.getCurrenciesName()))
         }.start()
+    }
+
+    fun getCurrenciesName() {
+        liveData.value = AppState.Loading
+        Thread {
+            liveData.postValue((AppState.SuccessName(repository.getCurrenciesName())))
+        }
     }
 }

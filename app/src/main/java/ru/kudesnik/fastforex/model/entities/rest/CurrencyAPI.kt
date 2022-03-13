@@ -4,6 +4,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.kudesnik.fastforex.API_KEY
+import ru.kudesnik.fastforex.model.entities.rest.rest_entities.CurrenciesNameDTO
 import ru.kudesnik.fastforex.model.entities.rest.rest_entities.CurrencyDTO
 
 interface CurrencyAllAPI {
@@ -12,4 +13,11 @@ interface CurrencyAllAPI {
         @Query("from") fromCurrency: String = "USD",
         @Query("api_key") apiKey: String = API_KEY
     ): Call<CurrencyDTO>
+}
+
+interface CurrencyAPI {
+    @GET("currencies")
+    fun getCurrenciesName(
+        @Query("api_key") apiKey: String = API_KEY
+    ): Call<CurrenciesNameDTO>
 }

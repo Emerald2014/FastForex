@@ -6,4 +6,5 @@ import ru.kudesnik.fastforex.model.entities.FetchAll
 interface Repository {
 //    fun getOneCurrency(base: Currencies): FetchAll
     fun getAllCurrency(base: String): FetchAll
+    fun getCurrenciesName(): Currencies
 }
