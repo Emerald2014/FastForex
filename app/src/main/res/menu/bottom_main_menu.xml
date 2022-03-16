@@ -2,9 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/btn_menu_popular"
+        android:icon="@drawable/ic_round_favorite_border_24"
         android:title="@string/btn_popular" />
 
     <item
         android:id="@+id/btn_menu_favourites"
+        android:icon="@drawable/ic_baseline_favorite_24"
         android:title="@string/btn_favourites" />
 </menu>
