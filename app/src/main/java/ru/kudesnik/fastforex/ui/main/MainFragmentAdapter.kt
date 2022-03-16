@@ -2,40 +2,44 @@ package ru.kudesnik.fastforex.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import ru.kudesnik.fastforex.FAVOURITE
-import ru.kudesnik.fastforex.MAIN_SETTINGS
+import coil.load
+import coil.size.Precision
+import coil.size.Scale
 import ru.kudesnik.fastforex.R
 import ru.kudesnik.fastforex.databinding.ItemMainBinding
 import ru.kudesnik.fastforex.model.entities.FetchAll
-import java.lang.StringBuilder
 
 class MainFragmentAdapter(
     val sum: Int,
     private val context: Context,
     private val setFavourite: MainFragment.SetFavourites,
+    private val delFavourite: MainFragment.DelFavourites,
 ) :
     RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
     private var currencyDataList: List<Pair<String, Double>> = listOf()
     private lateinit var currencyData: FetchAll
+    private lateinit var favorData: String
     private lateinit var testData: List<String>
 
     private lateinit var binding: ItemMainBinding
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setCurrency(data: FetchAll) {
+    fun setCurrency(data: FetchAll, dataFavor: String) {
 //        testData = data.results.toList()
         currencyDataList = data.results.toSortedMap().toList()
         currencyData = data
+        favorData = dataFavor
         notifyDataSetChanged()
 //        Log.d("listOperations", "Действие 1 - ${testData}")
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         binding = ItemMainBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -66,59 +70,40 @@ class MainFragmentAdapter(
         fun bind(currency: Pair<String, Double>) = with(binding) {
             currencyItem.text = currency.first
             exchangeItem.text = ((currency.second) * sum).toString()
+            if (favorData.contains(currency.first)) {
+//                favourites.setColorFilter(android.R.color.holo_orange_light);
+                favourites.setColorFilter(
+                    ContextCompat.getColor(context, android.R.color.holo_orange_light),
+                    android.graphics.PorterDuff.Mode.MULTIPLY
+                );
+
+            } else favourites.setColorFilter(
+                ContextCompat.getColor(context, android.R.color.darker_gray),
+                android.graphics.PorterDuff.Mode.MULTIPLY
+            );
+
             favourites.setOnClickListener {
-                if (currencyData.isFavourites) {
-                    favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_red_dark))
-//                    favourites.background.setTint(context.resources.getColor(android.R.color.holo_red_dark))
-//                    delFavourites(currency.first)
-                    setFavourite.setFav(currency.first)
+                if (favorData.contains(currency.first)) {
+                    favourites.setColorFilter(
+                        ContextCompat.getColor(context, android.R.color.darker_gray),
+                        android.graphics.PorterDuff.Mode.MULTIPLY
+                    );
+                    delFavourite.delFav(currency.first)
+
                     Log.d("myTag", "SetFav isFav = ${currency.first}")
 
-                    currencyData.isFavourites = false
                 } else {
-                    favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_bright))
+                    favourites.setColorFilter(
+                        ContextCompat.getColor(context, android.R.color.holo_orange_light),
+                        android.graphics.PorterDuff.Mode.MULTIPLY
+                    );
                     setFavourite.setFav(currency.first)
-
-                    setFavourite(currency.first)
                     Log.d("myTag", "SetFav isNOTFav = ${currency.first}")
-                    currencyData.isFavourites = true
-
                 }
             }
         }
     }
 
-    private fun delFavourites(first: String) {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            MAIN_SETTINGS, AppCompatActivity.MODE_PRIVATE
-        )
-        val stringBuilder = StringBuilder(sharedPreferences.getString(FAVOURITE, ""))
-
-        while (stringBuilder.contains(first)) {
-            stringBuilder.delete(
-                stringBuilder.indexOf(",$first"),
-                stringBuilder.indexOf(",$first") + 4
-            )
-            Log.d("listOperations", "Удаление $first- $stringBuilder")
-        }
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString(FAVOURITE, stringBuilder.toString())
-        editor.apply()
-
-    }
-
-    private fun setFavourite(first: String) {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            MAIN_SETTINGS, AppCompatActivity.MODE_PRIVATE
-        )
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        val stringBuilder: StringBuilder = StringBuilder()
-        stringBuilder.append(sharedPreferences.getString(FAVOURITE, "")).append(',').append(first)
-
-        Log.d("listOperations", "Действие 3 - $stringBuilder")
-        editor.putString(FAVOURITE, stringBuilder.toString())
-        editor.apply()
-    }
 
 }
 

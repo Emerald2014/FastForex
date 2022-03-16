@@ -64,10 +64,15 @@ class MainFragment : Fragment() {
                             Log.d("myTag", "SetFav VM Render = ${item}")
                             viewModel.setFavourites(name = item)
                         }
+                    },  object : DelFavourites {
+                        override fun delFav(item: String) {
+                            Log.d("myTag", "SetFav VM Render = ${item}")
+                            viewModel.deleteFavourites(name = item)
+                        }
                     }
                 )
                     .apply {
-                        setCurrency(appState.currencyData)
+                        setCurrency(appState.currencyData, appState.dataFavor)
                     }
                 recyclerViewMain.adapter = adapter
             }
@@ -106,6 +111,10 @@ class MainFragment : Fragment() {
 
     interface SetFavourites {
         fun setFav(item: String)
+    }
+
+    interface DelFavourites{
+        fun delFav(item:String)
     }
 
     companion object {

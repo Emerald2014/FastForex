@@ -1,22 +1,17 @@
 package ru.kudesnik.fastforex.ui.favourites
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.kudesnik.fastforex.R
 import ru.kudesnik.fastforex.databinding.FavouriteFragmentBinding
-import ru.kudesnik.fastforex.databinding.MainFragmentBinding
 import ru.kudesnik.fastforex.model.AppState
 import ru.kudesnik.fastforex.ui.main.MainFragment
-import ru.kudesnik.fastforex.ui.main.MainFragmentAdapter
-import ru.kudesnik.fastforex.ui.main.MainViewModel
 
 class FavouriteFragment : Fragment() {
     private val viewModel: FavouriteViewModel by viewModel()
@@ -25,9 +20,6 @@ class FavouriteFragment : Fragment() {
     private var adapter: FavouriteFragmentAdapter? = null
     private var listAdapter: List<String> = listOf()
     private var selectedItemSpinner = ""
-    private var selectedFavouriteCurrency = ""
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,34 +32,42 @@ class FavouriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
-//            adapter = FavouriteFragmentAdapter(editTextSum.text.toString().toInt(), requireContext(), object :
-//                MainFragment.SetFavourites {
-//                override fun setFav(item: String) {
-//                    viewModel.setFavourites(name = item)
-//                }
-//
-//            })
-
             recyclerViewFavourite.adapter = adapter
-
 
             viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
             viewModel.getCurrenciesName()
-            viewModel.getFavourites()
-            viewModel.getCurrencyList(selectedItemSpinner, viewModel.favouriteLiveDataString.toString())
-            Log.d("myTag", "OnViewCreated. vm - ${viewModel.getFavourites()}")
-
-
+            viewModel.getCurrencyList(selectedItemSpinner)
 //Spinner
-
             button.setOnClickListener {
-                viewModel.getCurrencyList(selectedItemSpinner, viewModel.favouriteLiveDataString.toString())
-
+                viewModel.getCurrencyList(selectedItemSpinner)
             }
         }
     }
 
-    private fun getSpinner() =with(binding){
+    private fun renderData(appState: AppState) = with(binding) {
+        when (appState) {
+
+            is AppState.Success -> {
+                listAdapter = appState.currenciesName.currencies.keys.toList()
+                getSpinner()
+                adapter = FavouriteFragmentAdapter(
+                    editTextSum.text.toString().toInt(),
+                    requireContext(),
+                    object : MainFragment.DelFavourites {
+                        override fun delFav(item: String) {
+                            viewModel.deleteFavourites(name = item)
+                        }
+                    }
+                ).apply {
+                    setCurrency(appState.currencyData)
+                }
+                recyclerViewFavourite.adapter = adapter
+            }
+            else -> {}
+        }
+    }
+
+    private fun getSpinner() = with(binding) {
         Log.d("testingMy", "OnViewCreated. listAdapter - $listAdapter")
         val adp1: ArrayAdapter<String> = ArrayAdapter<String>(
             requireContext(),
@@ -108,33 +108,6 @@ class FavouriteFragment : Fragment() {
         }
 //        viewModel.getCurrencyList(selectedItemSpinner)
 
-    }
-
-
-    private fun renderData(appState: AppState) = with(binding) {
-        when (appState) {
-
-            is AppState.SuccessFavourites -> {
-                listAdapter = appState.currenciesName.currencies.keys.toList()
-                getSpinner()
-                adapter = FavouriteFragmentAdapter(
-                    editTextSum.text.toString().toInt(),
-                    requireContext(),
-                    object : MainFragment.SetFavourites {
-                        override fun setFav(item: String) {
-                            viewModel.setFavourites(name = item)
-                        }
-
-                    }
-                ).apply {
-                    Log.d("myTag", "Favour render setCurrency = ${appState.currencyData}")
-
-                    setCurrency(appState.currencyData)
-                }
-                recyclerViewFavourite.adapter = adapter
-            }
-            else -> {}
-        }
     }
 
     companion object {

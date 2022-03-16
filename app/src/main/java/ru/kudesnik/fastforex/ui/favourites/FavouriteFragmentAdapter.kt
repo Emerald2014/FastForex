@@ -20,7 +20,7 @@ import java.lang.StringBuilder
 class FavouriteFragmentAdapter(
     val sum: Int,
     private val context: Context,
-    private val setFavourite: MainFragment.SetFavourites,
+    private val delFavourite: MainFragment.DelFavourites,
 ) :
     RecyclerView.Adapter<FavouriteFragmentAdapter.MainViewHolder>() {
     private var currencyDataList: List<Pair<String, Double>> = listOf()
@@ -71,52 +71,21 @@ class FavouriteFragmentAdapter(
                 if (currencyData.isFavourites) {
                     favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_red_dark))
 //                    favourites.background.setTint(context.resources.getColor(android.R.color.holo_red_dark))
-                    delFavourites(currency.first)
-                    setFavourite.setFav(currency.first)
+                    delFavourite.delFav(currency.first)
 
                     currencyData.isFavourites = false
                 } else {
                     currencyData.isFavourites = true
                     favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_bright))
-                    setFavourite.setFav(currency.first)
+//                    setFavourite.setFav(currency.first)
 
-                    setFavourite(currency.first)
+//                    setFavourite(currency.first)
                 }
             }
         }
     }
 
-    private fun delFavourites(first: String) {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            MAIN_SETTINGS, AppCompatActivity.MODE_PRIVATE
-        )
-        val stringBuilder = StringBuilder(sharedPreferences.getString(FAVOURITE, ""))
 
-        while (stringBuilder.contains(first)) {
-            stringBuilder.delete(
-                stringBuilder.indexOf(",$first"),
-                stringBuilder.indexOf(",$first") + 4
-            )
-            Log.d("listOperations", "Удаление $first- $stringBuilder")
-        }
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        editor.putString(FAVOURITE, stringBuilder.toString())
-        editor.apply()
-
-    }
-
-    private fun setFavourite(first: String) {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences(
-            MAIN_SETTINGS, AppCompatActivity.MODE_PRIVATE
-        )
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        val stringBuilder: StringBuilder = StringBuilder()
-        stringBuilder.append(sharedPreferences.getString(FAVOURITE, "")).append(',').append(first)
-
-        Log.d("listOperations", "Действие 3 - $stringBuilder")
-        editor.putString(FAVOURITE, stringBuilder.toString())
-        editor.apply()
-    }
 
 }
 

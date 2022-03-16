@@ -7,3 +7,7 @@ data class FetchAll(
     val updated: String,
     var isFavourites: Boolean = false
 )
+
+data class Item (
+    val pair: Pair<String, Double>
+        )

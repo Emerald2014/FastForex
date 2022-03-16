@@ -16,17 +16,23 @@ class FavouriteViewModel(private val repository: Repository) : ViewModel() {
 
     fun getLiveData(): LiveData<AppState> = liveData
 
-    fun getCurrencyList(base: String, to: String) {
+    fun getCurrencyList(base: String) {
         liveData.value = AppState.Loading
         Thread {
             liveData.postValue(
-                AppState.SuccessFavourites(
+                AppState.Success(
                     repository.getMultiCurrency(base, repository.getAllHistory()),
                     repository.getCurrenciesName(),
-
+                    repository.getAllHistory()
                 )
             )
         }.start()
+    }
+
+    fun deleteFavourites(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            favouriteLiveData.postValue(repository.deleteCurrency(name))
+        }
     }
 
     fun getCurrenciesName() {

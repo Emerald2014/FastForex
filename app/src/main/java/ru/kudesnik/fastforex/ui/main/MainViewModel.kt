@@ -22,7 +22,8 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             liveData.postValue(
                 AppState.Success(
                     repository.getAllCurrency(base),
-                    repository.getCurrenciesName()
+                    repository.getCurrenciesName(),
+                    repository.getAllHistory()
                 )
             )
         }.start()
@@ -38,6 +39,11 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun setFavourites(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             favouriteLiveData.postValue(repository.saveEntity(name))
+        }
+    }
+    fun deleteFavourites(name: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            favouriteLiveData.postValue(repository.deleteCurrency(name))
         }
     }
 }

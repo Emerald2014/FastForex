@@ -44,6 +44,8 @@ class RepositoryImpl : Repository {
         HistoryDatabase.db.historyDao().insert(convertCurrencyToHistoryEntity(name))
     }
 
+
+
     override fun getAllHistory(): String {
         return convertHistoryCurrencyToString(HistoryDatabase.db.historyDao().all())
 
