@@ -1,6 +1,5 @@
 package ru.kudesnik.fastforex.ui.main
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,13 +8,11 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.SpinnerAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.kudesnik.fastforex.R
-import ru.kudesnik.fastforex.model.AppState
 import ru.kudesnik.fastforex.databinding.MainFragmentBinding
+import ru.kudesnik.fastforex.model.AppState
 
 
 class MainFragment : Fragment() {
@@ -41,89 +38,74 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
 
-//            recyclerViewVer2 = recyclerViewMain
-//            recyclerViewMain.adapter = adapter
-//            adapter = MainFragmentAdapter().apply { setCurrency(testData) }
-//            recyclerViewMain.adapter = adapter
-
-            adapter = MainFragmentAdapter(editTextSum.text.toString().toInt())
             recyclerViewMain.adapter = adapter
 
             viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
-            viewModel.getCurrenciesName()
+            viewModel.getCurrenciesName() //Отображение спиннера при первом пуске
             viewModel.getCurrencyList(selectedItemSpinner)
 
 //Spinner
-
-button.setOnClickListener{
-    viewModel.getCurrencyList(selectedItemSpinner)
-
-}
+            button.setOnClickListener {
+                viewModel.getCurrencyList(selectedItemSpinner)
+            }
         }
     }
 
-    private fun MainFragmentBinding.getSpinner() {
+    private fun renderData(appState: AppState) = with(binding) {
+        when (appState) {
+            is AppState.Success -> {
+                listAdapter = appState.currenciesName.currencies.keys.toList()
+                getSpinner()
+                adapter = MainFragmentAdapter(
+                    editTextSum.text.toString().toInt(),
+                    requireContext(),
+                    object : SetFavourites {
+                        override fun setFav(item: String) {
+                            Log.d("myTag", "SetFav VM Render = ${item}")
+                            viewModel.setFavourites(name = item)
+                        }
+                    }
+                )
+                    .apply {
+                        setCurrency(appState.currencyData)
+                    }
+                recyclerViewMain.adapter = adapter
+            }
+            else -> {}
+        }
+    }
+
+    private fun getSpinner() = with(binding) {
         Log.d("testingMy", "OnViewCreated. listAdapter - $listAdapter")
         val adp1: ArrayAdapter<String> = ArrayAdapter<String>(
             requireContext(),
-            android.R.layout.simple_list_item_1 , listAdapter
-        //simple_list_item_1
+            android.R.layout.simple_list_item_1, listAdapter
         )
         adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adp1
-        val index = if (selectedItemSpinner!="") {
+        val index = if (selectedItemSpinner != "") {
             listAdapter.indexOf(selectedItemSpinner)
         } else if (listAdapter.contains("USD")) {
-                listAdapter.indexOf("USD")
-            } else {
-                listAdapter.indexOfFirst { true }
-            }
-
-
+            listAdapter.indexOf("USD")
+        } else {
+            listAdapter.indexOfFirst { true }
+        }
         spinner.setSelection(index)
-
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 itemSelected: View, selectedItemPosition: Int, selectedId: Long
             ) {
                 selectedItemSpinner = spinner.selectedItem.toString()
-
-                Log.d(
-                    "testingMy", "OnSelected. listAdapter - " +
-                            "${
-                                selectedItemSpinner
-                            }, $selectedItemPosition"
-                )
-//                viewModel.getLiveData().observe(viewLifecycleOwner) { renderData(it) }
                 adapter?.notifyDataSetChanged()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-//        viewModel.getCurrencyList(selectedItemSpinner)
-
     }
 
-
-
-    private fun renderData(appState: AppState) = with(binding) {
-        when (appState) {
-
-            is AppState.Success -> {
-                listAdapter = appState.currenciesName.currencies.keys.toList()
-                Log.d("testingMy", "Success. listAdapter - $listAdapter")
-                getSpinner()
-                adapter = MainFragmentAdapter(editTextSum.text.toString().toInt()).apply {
-                    setCurrency(appState.currencyData)
-                }
-                recyclerViewMain.adapter = adapter
-
-            }
-
-            else -> {}
-        }
-
+    interface SetFavourites {
+        fun setFav(item: String)
     }
 
     companion object {

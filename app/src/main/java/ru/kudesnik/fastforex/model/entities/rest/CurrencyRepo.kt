@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object CurrencyRepo {
-    val api : CurrencyAllAPI by lazy{
+    val api: CurrencyAllAPI by lazy {
         val adapter = Retrofit.Builder()
             .baseUrl(ApiUtils.baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
@@ -19,5 +19,13 @@ object CurrencyRepo {
             .client(ApiUtils.getOkHTTPBuilder())
             .build()
         adapter.create(CurrencyAPI::class.java)
+    }
+    val apiMulti: FavouriteCurrencyAPI by lazy {
+        val adapter = Retrofit.Builder()
+            .baseUrl(ApiUtils.baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(ApiUtils.getOkHTTPBuilder())
+            .build()
+        adapter.create(FavouriteCurrencyAPI::class.java)
     }
 }

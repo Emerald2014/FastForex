@@ -1,4 +1,4 @@
-package ru.kudesnik.fastforex.ui.main
+package ru.kudesnik.fastforex.ui.favourites
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,14 +14,15 @@ import ru.kudesnik.fastforex.MAIN_SETTINGS
 import ru.kudesnik.fastforex.R
 import ru.kudesnik.fastforex.databinding.ItemMainBinding
 import ru.kudesnik.fastforex.model.entities.FetchAll
+import ru.kudesnik.fastforex.ui.main.MainFragment
 import java.lang.StringBuilder
 
-class MainFragmentAdapter(
+class FavouriteFragmentAdapter(
     val sum: Int,
     private val context: Context,
     private val setFavourite: MainFragment.SetFavourites,
 ) :
-    RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
+    RecyclerView.Adapter<FavouriteFragmentAdapter.MainViewHolder>() {
     private var currencyDataList: List<Pair<String, Double>> = listOf()
     private lateinit var currencyData: FetchAll
     private lateinit var testData: List<String>
@@ -70,19 +71,16 @@ class MainFragmentAdapter(
                 if (currencyData.isFavourites) {
                     favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_red_dark))
 //                    favourites.background.setTint(context.resources.getColor(android.R.color.holo_red_dark))
-//                    delFavourites(currency.first)
+                    delFavourites(currency.first)
                     setFavourite.setFav(currency.first)
-                    Log.d("myTag", "SetFav isFav = ${currency.first}")
 
                     currencyData.isFavourites = false
                 } else {
+                    currencyData.isFavourites = true
                     favourites.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_bright))
                     setFavourite.setFav(currency.first)
 
                     setFavourite(currency.first)
-                    Log.d("myTag", "SetFav isNOTFav = ${currency.first}")
-                    currencyData.isFavourites = true
-
                 }
             }
         }

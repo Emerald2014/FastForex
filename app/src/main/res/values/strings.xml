@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FastForex - Отслеживание курсов валют</string>
+    <string name="btn_favourites">Избранное</string>
+    <string name="btn_popular">Популярное</string>
 </resources>

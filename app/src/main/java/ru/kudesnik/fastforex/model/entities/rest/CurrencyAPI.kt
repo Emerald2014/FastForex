@@ -21,3 +21,12 @@ interface CurrencyAPI {
         @Query("api_key") apiKey: String = API_KEY
     ): Call<CurrenciesNameDTO>
 }
+
+interface FavouriteCurrencyAPI {
+    @GET("fetch-multi")
+    fun getMultiCurrency(
+        @Query("from") fromCurrency: String,
+        @Query("to") toCurrency: String,
+        @Query("api_key") apiKey: String = API_KEY
+    ): Call<CurrencyDTO>
+}
